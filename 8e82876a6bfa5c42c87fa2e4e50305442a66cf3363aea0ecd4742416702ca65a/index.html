@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post Everything Productions — Drive</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Google Sans", Roboto, Arial, sans-serif;
+    background: #f8f9fa;
+    color: #202124;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    height: 64px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    padding: 0 16px 0 8px;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px;
+    text-decoration: none;
+  }
+
+  .topbar-logo svg { width: 32px; height: 32px; }
+
+  .topbar-logo-text {
+    font-size: 18px;
+    color: #5f6368;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .topbar-logo-text strong { color: #202124; font-weight: 500; }
+
+  .topbar-search {
+    flex: 1;
+    max-width: 720px;
+    margin: 0 16px;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: #f1f3f4;
+    border-radius: 24px;
+    padding: 8px 16px;
+    gap: 12px;
+    color: #5f6368;
+    font-size: 16px;
+  }
+
+  .search-box svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  .search-box span { color: #80868b; font-size: 15px; }
+
+  .topbar-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #1a73e8;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 500;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* ── Layout ── */
+  .layout { display: flex; min-height: calc(100vh - 64px); }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 256px;
+    flex-shrink: 0;
+    padding: 12px 8px;
+    background: #f8f9fa;
+  }
+
+  .new-btn {
+    display: flex; align-items: center; gap: 12px;
+    background: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 14px 24px;
+    font-size: 14px; font-weight: 500;
+    color: #202124;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 1px 2px rgba(0,0,0,.1);
+    cursor: default;
+    margin: 4px 8px 16px;
+    width: calc(100% - 16px);
+  }
+
+  .new-btn svg { color: #1a73e8; }
+
+  .sidebar-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 8px 12px;
+    border-radius: 0 16px 16px 0;
+    cursor: pointer;
+    color: #202124;
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+
+  .sidebar-item:hover { background: #e8eaed; }
+  .sidebar-item.active { background: #d3e3fd; color: #0842a0; }
+  .sidebar-item.active svg { color: #0842a0; }
+  .sidebar-item svg { color: #5f6368; width: 20px; height: 20px; flex-shrink: 0; }
+
+  /* ── Main content ── */
+  .main { flex: 1; padding: 20px 24px; overflow: auto; }
+
+  /* ── Breadcrumbs ── */
+  .breadcrumbs {
+    display: flex; align-items: center; gap: 4px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    flex-wrap: wrap;
+  }
+
+  .crumb {
+    color: #5f6368;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .crumb:hover { background: #e8eaed; color: #202124; }
+  .crumb.active { color: #202124; font-weight: 500; cursor: default; }
+  .crumb.active:hover { background: transparent; }
+
+  .crumb-sep { color: #5f6368; font-size: 18px; user-select: none; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .toolbar-left { display: flex; align-items: center; gap: 4px; }
+
+  .toolbar-title {
+    font-size: 16px; font-weight: 500; color: #202124;
+    padding: 4px 8px;
+  }
+
+  .view-btns {
+    display: flex; gap: 2px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .view-btn {
+    padding: 6px 10px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    color: #5f6368;
+    display: flex; align-items: center;
+  }
+
+  .view-btn.active { background: #d3e3fd; color: #0842a0; }
+  .view-btn svg { width: 18px; height: 18px; }
+
+  /* ── File list header ── */
+  .list-header {
+    display: grid;
+    grid-template-columns: 1fr 160px 160px;
+    padding: 8px 16px;
+    color: #5f6368;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 4px;
+  }
+
+  /* ── File rows ── */
+  .file-row {
+    display: grid;
+    grid-template-columns: 1fr 160px 160px;
+    align-items: center;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+  }
+
+  .file-row:hover { background: #f1f3f4; }
+  .file-row.selected { background: #d3e3fd; }
+
+  .file-name {
+    display: flex; align-items: center; gap: 12px;
+    min-width: 0;
+  }
+
+  .file-name-text {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-size: 14px; color: #202124;
+  }
+
+  .file-icon { width: 20px; height: 20px; flex-shrink: 0; }
+
+  .file-meta { font-size: 13px; color: #5f6368; }
+
+  /* ── Empty state ── */
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: #5f6368;
+  }
+
+  .empty svg { width: 80px; height: 80px; margin-bottom: 16px; color: #dadce0; }
+  .empty p { font-size: 16px; }
+
+  /* ── Grid view ── */
+  .grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .grid-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #fff;
+    transition: box-shadow 0.15s;
+  }
+
+  .grid-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.15); border-color: #c6c6c6; }
+
+  .grid-card-preview {
+    height: 120px;
+    background: #f8f9fa;
+    display: flex; align-items: center; justify-content: center;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .grid-card-preview svg { width: 48px; height: 48px; }
+
+  .grid-card-info {
+    padding: 10px 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .grid-card-info svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .grid-card-name {
+    font-size: 13px; color: #202124;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* ── Section labels ── */
+  .section-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    color: #5f6368;
+    padding: 16px 16px 6px;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+      <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+      <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
+      <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+      <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+      <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+      <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+    </svg>
+    <span class="topbar-logo-text"><strong>Post Everything</strong> Drive</span>
+  </div>
+  <div class="topbar-search">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <span>Search in Drive</span>
+    </div>
+  </div>
+  <div class="topbar-avatar">PEP</div>
+</div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <button class="new-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      New
+    </button>
+    <div class="sidebar-item active">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+      My Drive
+    </div>
+
+    <div class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 8c0-1.42-.5-2.73-1.33-3.76.42-.14.86-.24 1.33-.24 2.21 0 4 1.79 4 4s-1.79 4-4 4c-.43 0-.84-.09-1.23-.21C14.46 10.86 15 9.49 15 8zm-6 0c0 2.21 1.79 4 4 4s4-1.79 4-4-1.79-4-4-4-4 1.79-4 4zm-4 9c0-2.25 4.31-3.5 7-3.5.44 0 .91.04 1.38.1C12.53 14.11 11 15.33 11 17v2H3v-2zm16 2v-2c0-1.68-1.54-2.9-3.41-3.4.87.27 1.41.73 1.41 1.4v2h4v2h-2z"/></svg>
+      Shared with me
+    </div>
+    <div class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+      Recent
+    </div>
+    <div class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      Starred
+    </div>
+    <div class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 16h4v2h-4zm0-8h7v2h-7zm0 4h6v2h-6zM3 18c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V8H3v10zM14 5h-3l-1-1H6L5 5H2v2h12z"/></svg>
+      Trash
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main" id="main">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<script>
+// ── Folder structure ────────────────────────────────────────────────────────
+
+const DRIVE = {
+  name: "Post Everything Productions",
+  type: "folder",
+  children: [
+    {
+      name: "Action Boys", type: "folder",
+      children: [
+    {
+      name: "Action Boys 2015", type: "folder", special: true,
+      children: [
+        { name: "Scripts", type: "folder", children: [
+          { name: "Action Boys! EP 1.3.pdf", type: "pdf" },
+          { name: "Action Boys! EP 2.2.pdf", type: "pdf" },
+          { name: "Action Boys! EP 3.3.pdf", type: "pdf" },
+          { name: "Action Boys! EP 4.2.pdf", type: "pdf" },
+          { name: "Action Boys! EP 5.3.pdf", type: "pdf" },
+          { name: "Action Boys! EP 6.2.pdf", type: "pdf" },
+          { name: "Action Boys - Treatment", type: "doc" },
+          { name: "Action Boys - Budget.pdf", type: "pdf" },
+          { name: "Action Boys - Treatment.pdf", type: "pdf" },
+          { name: "Action Boys Treatment", type: "doc" },
+          { name: "Action Boys ep notes", type: "doc" },
+          { name: "Action Boys Pilot Final.pdf", type: "pdf" },
+          { name: "ActionBoys-Treatment.pdf", type: "pdf" },
+          { name: "ActionBoysv7.celtx", type: "file" },
+          { name: "Old Versions", type: "folder", children: [
+            { name: "ACTION BOYS - PILOT.pdf", type: "pdf" },
+            { name: "ACTION BOYS - TREATMENT.pdf", type: "pdf" },
+            { name: "Action Boys Pilot.pdf", type: "pdf" },
+            { name: "Action Boys v.6.pdf", type: "pdf" },
+            { name: "ActionBoysTreatment.pdf", type: "pdf" },
+            { name: "ActionBoysv7.celtx", type: "file" },
+            { name: "andrew_Action Boys Treatment", type: "doc" },
+          ]},
+        ]},
+        { name: "Production Docs", type: "folder", children: [
+          { name: "Action Boys", type: "folder", children: [
+            { name: "2015 Folder", type: "folder", children: [
+              { name: "Budget Spreadsheet - Action Boys", type: "sheet" },
+              { name: "Production Doc", type: "doc" },
+              { name: "Call Sheets", type: "folder", children: [
+                { name: "Action Boys Call Sheet.Day 1.pdf", type: "pdf" },
+                { name: "Action Boys Call Sheet.Day 2.pdf", type: "pdf" },
+                { name: "Action Boys Call Sheet.Day3.pdf", type: "pdf" },
+              ]},
+              { name: "Cliffhangers! EP 1.3", type: "pdf" },
+              { name: "Cliffhangers! EP 2.2", type: "pdf" },
+              { name: "Cliffhangers! EP 3.3", type: "pdf" },
+              { name: "Cliffhangers! EP 4.2", type: "pdf" },
+              { name: "Cliffhangers! EP 5.3", type: "pdf" },
+              { name: "Cliffhangers! EP 6.2", type: "pdf" },
+              { name: "Release Forms", type: "folder", children: [
+                { name: "IAF Form Likeness Release 021115.pdf", type: "pdf" },
+                { name: "Release.Cliffhangers.Dwyer", type: "pdf" },
+              ]},
+            ]},
+          ]},
+        ]},
+        { name: "Legal", type: "folder", children: [
+          { name: "aaa release forms", type: "folder", children: [
+            { name: "Release Form 1.pdf", type: "pdf" },
+            { name: "Release Form 2.pdf", type: "pdf" },
+            { name: "Release Form 3.pdf", type: "pdf" },
+            { name: "Release Form 4.pdf", type: "pdf" },
+            { name: "Release Form 5.pdf", type: "pdf" },
+            { name: "Release Form 6.pdf", type: "pdf" },
+            { name: "Release Form 7.pdf", type: "pdf" },
+            { name: "Release Form 8.pdf", type: "pdf" },
+            { name: "Release Form 9.pdf", type: "pdf" },
+          ]},
+        ]},
+        { name: "old", type: "folder", children: [] },
+      ]
+    },
+      ]
+    },
+    {
+      name: "Produced Work", type: "folder",
+      children: [
+        { name: "Short Films", type: "folder", children: [
+          { name: "Hot. Red. Leather.", type: "folder", children: [
+            { name: "Scripts", type: "folder", children: [
+              { name: "HOT. RED. LEATHER.v3.pdf", type: "pdf" },
+              { name: "HOT. RED. LEATHER.v3.celtx", type: "file" },
+              { name: "HRL - Direct Translation", type: "doc" },
+            ]},
+            { name: "Production Docs", type: "folder", children: [
+              { name: "HOT. RED. LEATHER. - Storyboards.pdf", type: "pdf" },
+              { name: "HOT. RED. LEATHER. - Production Document", type: "doc" },
+              { name: "HOT. RED. LEATHER. - Budget", type: "sheet" },
+              { name: "Audio Feedback - HRL", type: "doc" },
+              { name: "HRL Deutsch.m4a", type: "audio" },
+              { name: "Call Sheets", type: "folder", children: [
+                { name: "HRL_call_sheet_saturday", type: "sheet" },
+                { name: "HRL_call_sheet_sunday", type: "sheet" },
+              ]},
+              { name: "Receipts", type: "folder", children: [
+                { name: "Invoice#19772638.pdf", type: "pdf" },
+                { name: "Uber 1.PNG", type: "image" },
+                { name: "Uber 2.PNG", type: "image" },
+              ]},
+            ]},
+            { name: "Photos", type: "folder", children: [
+              { name: "Sam and Chris Photos", type: "folder", children: [
+                { name: "IMG_1263.JPG", type: "image" }, { name: "IMG_1264.JPG", type: "image" },
+                { name: "IMG_1265.JPG", type: "image" }, { name: "IMG_1266.JPG", type: "image" },
+                { name: "IMG_1267.JPG", type: "image" }, { name: "IMG_1268.JPG", type: "image" },
+              ]},
+            ]},
+            { name: "OLD", type: "folder", children: [
+              { name: "HOT. RED. LEATHER.final.pdf", type: "pdf" },
+            ]},
+            { name: "call_sheet_template.xlsx", type: "sheet" },
+          ]},
+          { name: "The Birthday Party", type: "folder", children: [
+            { name: "Scripts", type: "folder", children: [
+              { name: "THE BIRTHDAY PARTY_v3.pdf", type: "pdf" },
+            ]},
+            { name: "Production Docs", type: "folder", children: [
+              { name: "The Birthday Party Production Document.doc", type: "doc" },
+            ]},
+            { name: "Legal", type: "folder", children: [
+              { name: "Big Harp - It's Over Contract.pdf", type: "pdf" },
+            ]},
+          ]},
+          { name: "The Boy", type: "folder", children: [
+            { name: "Scripts", type: "folder", children: [
+              { name: "The Boy He Sought.pdf", type: "pdf" },
+            ]},
+            { name: "Production Docs", type: "folder", children: [
+              { name: "The Boy -- Schedule", type: "doc" },
+              { name: "The Boy -- Montage", type: "doc" },
+              { name: "The Boy -- Equipment", type: "doc" },
+              { name: "The Boy -- Prop Report", type: "doc" },
+              { name: "THE BOY -- COSTUME REPORT", type: "doc" },
+              { name: "THE BOY -- SCENE REPORT", type: "doc" },
+              { name: "The Boy -- Location Report", type: "doc" },
+              { name: "The Boy -- Character Report For \"Reid\"", type: "doc" },
+              { name: "The Boy -- Character Report For \"Andrew\"", type: "doc" },
+            ]},
+            { name: "Photos", type: "folder", children: [
+              { name: "boy picture web.jpg", type: "image" },
+              { name: "reid france.jpg", type: "image" },
+              { name: "The Boy -- Reid in France", type: "folder", children: [
+                { name: "Photo 1.jpg", type: "image" }, { name: "Photo 2.jpg", type: "image" },
+                { name: "Photo 3.jpg", type: "image" }, { name: "Photo 4.jpg", type: "image" },
+              ]},
+            ]},
+            { name: "old", type: "folder", children: [] },
+          ]},
+          { name: "The Dog, The Boy", type: "folder", children: [
+            { name: "Scripts", type: "folder", children: [
+              { name: "The Dog, The Boy v8.pdf", type: "pdf" },
+            ]},
+            { name: "Production Docs", type: "folder", children: [
+              { name: "The Dog, The Boy - Production Document", type: "doc" },
+              { name: "The Dog, The Boy - Budget", type: "sheet" },
+              { name: "The Dog, The Boy - Shooting Schedule", type: "doc" },
+              { name: "The Dog, The Boy - Costume Rubric.pdf", type: "pdf" },
+              { name: "The Dog, The Boy - Costume Breakdown", type: "doc" },
+              { name: "The Dog, The Boy - Effects Breakdown", type: "doc" },
+              { name: "The Dog The Boy - Scene Breakdown", type: "doc" },
+              { name: "The Dog, The Boy - In-Scene Character Actions", type: "doc" },
+              { name: "The Dog, The Boy - Expenses", type: "sheet" },
+              { name: "FILES TO PRINT", type: "folder", children: [] },
+              { name: "PRODUCTION SPREADSHEETS", type: "folder", children: [] },
+              { name: "Lost Dog fliers", type: "folder", children: [] },
+            ]},
+            { name: "Photos", type: "folder", children: [
+              { name: "Dog/Boy Photos", type: "folder", children: [] },
+            ]},
+          ]},
+        ]},
+        { name: "Digital Series", type: "folder", children: [
+          { name: "DadApp", type: "folder", children: [
+            { name: "Scripts", type: "folder", children: [
+              { name: "DadApp", type: "doc" },
+              { name: "DadApp.v3.pdf", type: "pdf" },
+            ]},
+            { name: "Production Docs", type: "folder", children: [
+              { name: "DadApp Call Sheet.pdf", type: "pdf" },
+              { name: "DadApp Call Sheet", type: "sheet" },
+              { name: "DadApp Expenses", type: "sheet" },
+            ]},
+            { name: "Legal", type: "folder", children: [
+              { name: "Release Forms", type: "folder", children: [] },
+            ]},
+          ]},
+        ]},
+        { name: "Live Shows", type: "folder", children: [
+          { name: "2017 Live Show", type: "folder", children: [
+            { name: "PEP Live Show v1", type: "doc" },
+            { name: "PEP Live Show v2", type: "doc" },
+            { name: "PEP Live Show v3", type: "doc" },
+            { name: "Andrew and Reid with Reid and Andrew", type: "folder", children: [
+              { name: "Andrew & Reid with Reid & Andrew - Treatment", type: "doc" },
+            ]},
+            { name: "Docs and images", type: "folder", children: [
+              { name: "Invite List", type: "doc" },
+              { name: "PEP Video Showcase", type: "doc" },
+              { name: "PEP mailing list form", type: "doc" },
+              { name: "Trivia Questions", type: "doc" },
+            ]},
+          ]},
+        ]},
+        { name: "TSMBT", type: "folder", children: [
+          { name: "Short Story Collection", type: "folder", children: [
+            { name: "Stories", type: "folder", children: [
+              { name: "andrew", type: "folder", children: [
+                { name: "The Mathematics of Grocery Stores", type: "doc" },
+                { name: "The Passage of Memory", type: "doc" },
+                { name: "The Pilot", type: "doc" },
+                { name: "Maps of the North", type: "doc" },
+                { name: "The Bear Musician", type: "doc" },
+                { name: "Fun Boy Limited Party Travel Number One", type: "doc" },
+                { name: "Dick Dvorak Bowls A Perfect Game", type: "doc" },
+                { name: "After The Attack", type: "doc" },
+              ]},
+            ]},
+          ]},
+          { name: "Short Story Worksheet", type: "sheet" },
+          { name: "Poetry for TSMBT Twitter", type: "doc" },
+        ]},
+      ]
+    },
+    {
+      name: "Development Archive", type: "folder",
+      children: [
+        { name: "TV Pilots", type: "folder", children: [
+          { name: "Awareless", type: "folder", children: [
+            { name: "Scripts & Treatments", type: "folder", children: [
+              { name: "Awareless - Pilot.pdf", type: "pdf" },
+              { name: "awareless_writing_samples.pdf", type: "pdf" },
+              { name: "awareless_treatment.pdf", type: "pdf" },
+              { name: "Awareless - Treatment.pdf", type: "pdf" },
+            ]},
+          ]},
+          { name: "Bunker Buddies", type: "folder", children: [
+            { name: "Scripts & Treatments", type: "folder", children: [
+              { name: "Bunker Buddies Pilot.pdf", type: "pdf" },
+              { name: "Bunker Buddies Treatment 2.0", type: "doc" },
+              { name: "BUNKER BUDDIES - TREATMENT", type: "doc" },
+              { name: "Bunker Buddies - Treatment.pdf", type: "pdf" },
+            ]},
+            { name: "OLD", type: "folder", children: [] },
+          ]},
+          { name: "Shamed", type: "folder", children: [
+            { name: "Scripts & Treatments", type: "folder", children: [
+              { name: "Shamed - Pilot.pdf", type: "pdf" },
+              { name: "Shamed - Treatment.pdf", type: "pdf" },
+              { name: "Shamed - Treatment", type: "doc" },
+              { name: "Shamed - Budget.pdf", type: "pdf" },
+            ]},
+            { name: "old", type: "folder", children: [] },
+          ]},
+          { name: "The Family Brothers", type: "folder", children: [
+            { name: "Scripts & Treatments", type: "folder", children: [
+              { name: "FamilyBrothers-Treatment.pdf", type: "pdf" },
+              { name: "Family Brothers - Treatment", type: "doc" },
+              { name: "Family Brothers - Treatment.pdf", type: "pdf" },
+              { name: "Family Brothers - Budget.pdf", type: "pdf" },
+            ]},
+            { name: "old", type: "folder", children: [] },
+          ]},
+          { name: "The Truest Crime", type: "folder", children: [
+            { name: "TheTruestCrime-Treatment.pdf", type: "pdf" },
+            { name: "The Truest Crime - Treatment", type: "doc" },
+            { name: "old", type: "folder", children: [] },
+          ]},
+          { name: "All About Dads", type: "folder", children: [
+            { name: "AllAboutDads-Treatment.pdf", type: "pdf" },
+            { name: "All About Dads - Treatment", type: "doc" },
+          ]},
+          { name: "Vine Star", type: "folder", children: [
+            { name: "Vine Star Beats / Brainstorm", type: "doc" },
+          ]},
+          { name: "Butler Heights", type: "folder", children: [
+            { name: "Butler Heights - Treatment", type: "doc" },
+            { name: "DRAFT: Butler Heights - Treatment", type: "doc" },
+            { name: "Butler Heights - Budget.pdf", type: "pdf" },
+          ]},
+          { name: "Cold Facts", type: "folder", children: [
+            { name: "Cold Facts - Treatment", type: "doc" },
+            { name: "Cold Facts - Treatment.pdf", type: "pdf" },
+            { name: "Cold Facts - Budget.pdf", type: "pdf" },
+          ]},
+        ]},
+        { name: "Web Series", type: "folder", children: [
+          { name: "Isthmus", type: "folder", children: [
+            { name: "Treatments / Scripts", type: "folder", children: [
+              { name: "Isthmus-Treatment.pdf", type: "pdf" },
+              { name: "Isthmus - Treatment", type: "doc" },
+              { name: "Isthmus 1.3.pdf", type: "pdf" },
+              { name: "Isthmus 1.1.celtx", type: "file" },
+            ]},
+            { name: "Character & Episode Files", type: "folder", children: [
+              { name: "Other Character Sheet.jpg", type: "image" },
+              { name: "Grig Character Sheet.jpg", type: "image" },
+              { name: "Isthmus Ep 1.pdf", type: "pdf" },
+              { name: "Isthmus 1.2.pdf", type: "pdf" },
+            ]},
+          ]},
+          { name: "My Uncle's Science Garage", type: "folder", children: [
+            { name: "MyUnclesScienceGarage-Treatment.pdf", type: "pdf" },
+            { name: "My Uncle's Science Garage - Treatment", type: "doc" },
+          ]},
+          { name: "The Cold Part", type: "folder", children: [
+            { name: "TheColdPart-Treatment-FINAL.pdf", type: "pdf" },
+            { name: "The Cold Part - Treatment - FINAL", type: "doc" },
+            { name: "Old", type: "folder", children: [] },
+          ]},
+        ]},
+        { name: "Network Pitches", type: "folder", children: [
+          { name: "IFC", type: "folder", children: [
+            { name: "IFC Brainstorm", type: "doc" },
+            { name: "IFC To Do", type: "doc" },
+          ]},
+          { name: "Comedy Central Social Media", type: "folder", children: [
+            { name: "CC - Branded Content Series", type: "slides" },
+            { name: "CC Branded Content Pitches", type: "doc" },
+            { name: "PEP - CC Pitch", type: "slides" },
+            { name: "Comedy Central Pitches", type: "doc" },
+            { name: "Pitches", type: "doc" },
+          ]},
+          { name: "At Home Experiments PEP Pitch", type: "slides" },
+          { name: "Unconditional Love", type: "folder", children: [
+            { name: "Circle of Confusion - Unconditional Love", type: "doc" },
+            { name: "CircleofConfusion-UnconditionalLove.pdf", type: "pdf" },
+            { name: "DRAFT_Circle of Confusion - Unconditional Love", type: "doc" },
+          ]},
+          { name: "WagTV", type: "folder", children: [
+            { name: "Mona Lisa Mysteries.docx", type: "doc" },
+          ]},
+          { name: "2017 Dek", type: "folder", children: [
+            { name: "dek requirements", type: "doc" },
+            { name: "photos", type: "folder", children: [
+              { name: "andrew_headshot.jpg", type: "image" },
+            ]},
+          ]},
+        ]},
+        { name: "Features", type: "folder", children: [
+          { name: "The Perfect Man", type: "folder", children: [
+            { name: "The Perfect Man - Source Text for Short Film", type: "doc" },
+          ]},
+          { name: "Ants In The Hand", type: "doc" },
+          { name: "Romulus and Remus / The Wolf's Teat", type: "doc" },
+          { name: "the weerd brothers feature outline v2", type: "doc" },
+        ]},
+      ]
+    },
+    {
+      name: "Banned Scripts", type: "folder",
+      children: [
+        { name: "A Celebration.pdf", type: "pdf" },
+        { name: "An Imporant Sketch about a Man.pdf", type: "pdf" },
+        { name: "Chest Cold.pdf", type: "pdf" },
+        { name: "Chest Fever - Post Everything Productions.pdf", type: "pdf" },
+        { name: "Chest Fever.pdf", type: "pdf" },
+        { name: "DadParty1.0.pdf", type: "pdf" },
+        { name: "Gas Lines.pdf", type: "pdf" },
+        { name: "Hands Outline", type: "doc" },
+        { name: "Hands.pdf", type: "pdf" },
+        { name: "Heart of Worms.pdf", type: "pdf" },
+        { name: "MacGlorick.pdf", type: "pdf" },
+        { name: "New York City Girl.pdf", type: "pdf" },
+        { name: "PEP - Heart of Worms.pdf", type: "pdf" },
+        { name: "Rocket Boys.pdf", type: "pdf" },
+        { name: "SICK.pdf", type: "pdf" },
+        { name: "SICK_oldoutdated.pdf", type: "pdf" },
+        { name: "THE BROTHER.pdf", type: "pdf" },
+        { name: "THE SENTENCE.pdf", type: "pdf" },
+        { name: "The (F)other.pdf", type: "pdf" },
+        { name: "The Accident - or - Just Desserts.pdf", type: "pdf" },
+        { name: "The Birthday Party.pdf", type: "pdf" },
+        { name: "The Boy.pdf", type: "pdf" },
+        { name: "The Bugs Are Back.pdf", type: "pdf" },
+        { name: "The Command.pdf", type: "pdf" },
+        { name: "The Incident.pdf", type: "pdf" },
+        { name: "The Replacement v2.pdf", type: "pdf" },
+        { name: "The Replacement v3.pdf", type: "pdf" },
+        { name: "The Replacement.pdf", type: "pdf" },
+        { name: "The Selfish Woman - Post Everything Productions.pdf", type: "pdf" },
+        { name: "The Selfish Woman rev.4.pdf", type: "pdf" },
+        { name: "The Virtuous Man.pdf", type: "pdf" },
+        { name: "Tiny Men.pdf", type: "pdf" },
+        { name: "Too Young Too Tough 2.0.pdf", type: "pdf" },
+        { name: "Too Young Too Tough.pdf", type: "pdf" },
+        { name: "Tree House Summer.pdf", type: "pdf" },
+      ]
+    },
+    {
+      name: "Admin", type: "folder",
+      children: [
+        { name: "Agendas", type: "folder", children: [
+          { name: "2019.11.25 Patreon + LPN Meeting", type: "doc" },
+          { name: "2020.01.11 Meeting", type: "doc" },
+          { name: "Year In Review - 2016", type: "doc" },
+          { name: "PEP: MEETINGS NOTES", type: "doc" },
+          { name: "notes", type: "folder", children: [
+            { name: "2016.05", type: "doc" },
+          ]},
+          { name: "2017 Agendas", type: "folder", children: [
+            { name: "2017.02.06_agenda", type: "doc" },
+            { name: "2017.02.16_agenda", type: "doc" },
+            { name: "2017.03.04_agenda", type: "doc" },
+            { name: "2017.03.08_agenda", type: "doc" },
+            { name: "2017.04.02_agenda", type: "doc" },
+            { name: "2017.04.11.agenda", type: "doc" },
+          ]},
+        ]},
+        { name: "Meeting Notes", type: "folder", children: [
+          { name: "Drew Mtg Notes.rtf", type: "doc" },
+        ]},
+        { name: "Finance", type: "folder", children: [
+          { name: "2015 Budget", type: "sheet" },
+          { name: "2016 Budget Estimates", type: "sheet" },
+          { name: "2020 Spending", type: "sheet" },
+          { name: "Monthly Budget Template", type: "sheet" },
+        ]},
+        { name: "Documents / Spreadsheet Templates", type: "folder", children: [
+          { name: "CALL SHEET TEMPLATE.xls", type: "sheet" },
+          { name: "Copy of CALL SHEET TEMPLATE.xls", type: "sheet" },
+          { name: "MUST WATCH MOVIES LIST", type: "doc" },
+          { name: "PEP: TASK BOARD", type: "sheet" },
+          { name: "PROJECTS TIMELINE", type: "sheet" },
+          { name: "Where to Submit", type: "doc" },
+        ]},
+        { name: "Festivals", type: "folder", children: [
+          { name: "Film Festival Deadlines", type: "sheet" },
+          { name: "Webseries Festivals", type: "sheet" },
+          { name: "WithoutABox Info", type: "doc" },
+        ]},
+      ]
+    },
+    {
+      name: "Photos", type: "folder",
+      children: [
+        { name: "Stills", type: "folder", children: [
+          { name: "BTS Photos", type: "folder", children: [] },
+          { name: "Adam Wirtz Stills (200+ images)", type: "folder", children: [] },
+        ]},
+      ]
+    },
+    {
+      name: "Social Media", type: "folder",
+      children: [
+        { name: "Poems", type: "folder", children: [
+          { name: "old", type: "folder", children: [
+            { name: "2018.03.05 - 2018.03.26", type: "doc" },
+          ]},
+        ]},
+      ]
+    },
+    {
+      name: "TSMBT", type: "folder",
+      children: [
+        { name: "Dead Bird Songs", type: "folder", children: [
+          { name: "2024.03.25 Dead Bird Songs - ALL - ZOOM.m4a", type: "audio" },
+          { name: "Dead Birds - Andrew - RAW.wav", type: "audio" },
+        ]},
+      ]
+    },
+  ]
+};
+
+// ── State ────────────────────────────────────────────────────────────────────
+
+let stack = [DRIVE]; // navigation stack
+let viewMode = "list"; // "list" | "grid"
+
+// ── Icons ────────────────────────────────────────────────────────────────────
+
+function folderIcon(color="#5f6368", size=20) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>`;
+}
+
+function fileIcon(type, size=20) {
+  const configs = {
+    doc:   { color: "#4285f4", letter: "D", label: "Docs" },
+    sheet: { color: "#0f9d58", letter: "S", label: "Sheets" },
+    slides:{ color: "#f4b400", letter: "P", label: "Slides" },
+    pdf:   { color: "#ea4335", letter: "P", label: "PDF" },
+    image: { color: "#ff6d00", letter: "I", label: "Image" },
+    audio: { color: "#9c27b0", letter: "A", label: "Audio" },
+    file:  { color: "#5f6368", letter: "F", label: "File" },
+  };
+  const c = configs[type] || configs.file;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24">
+    <rect width="24" height="24" rx="2" fill="${c.color}" opacity="0.12"/>
+    <text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700"
+      font-family="Google Sans,Roboto,Arial,sans-serif" fill="${c.color}">${c.letter}</text>
+  </svg>`;
+}
+
+function itemIcon(item, size=20) {
+  if (item.type === "folder") return folderIcon("#5f6368", size);
+  return fileIcon(item.type, size);
+}
+
+function folderColorIcon(item, size=48) {
+  if (item.type === "folder") return folderIcon("#fbbc04", size);
+  return fileIcon(item.type, size);
+}
+
+// ── Navigate ─────────────────────────────────────────────────────────────────
+
+function navigate(item) {
+  if (item.type !== "folder") return;
+  stack.push(item);
+  render();
+}
+
+function navigateTo(index) {
+  stack = stack.slice(0, index + 1);
+  render();
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+
+function render() {
+  const current = stack[stack.length - 1];
+  const children = current.children || [];
+  const folders = children.filter(c => c.type === "folder");
+  const files   = children.filter(c => c.type !== "folder");
+
+  const main = document.getElementById("main");
+
+  // Breadcrumbs
+  const crumbs = stack.map((item, i) => {
+    const isLast = i === stack.length - 1;
+    return `<span class="crumb ${isLast ? "active" : ""}"
+      onclick="${isLast ? "" : `navigateTo(${i})`}">${item.name}</span>
+      ${isLast ? "" : '<span class="crumb-sep">›</span>'}`;
+  }).join("");
+
+  // Toolbar
+  const toolbar = `
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span class="toolbar-title">${current.name}</span>
+      </div>
+      <div class="view-btns">
+        <button class="view-btn ${viewMode==="list"?"active":""}" onclick="setView('list')" title="List view">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+        </button>
+        <button class="view-btn ${viewMode==="grid"?"active":""}" onclick="setView('grid')" title="Grid view">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3zm0 10h8v8H3zm10-10h8v8h-8zm0 10h8v8h-8z"/></svg>
+        </button>
+      </div>
+    </div>`;
+
+  if (viewMode === "list") {
+    const header = `<div class="list-header"><span>Name</span><span>Owner</span><span>Modified</span></div>`;
+
+    const folderRows = folders.map(item => `
+      <div class="file-row" onclick="navigate(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+        <div class="file-name">
+          ${itemIcon(item)}
+          <span class="file-name-text">${item.name}</span>
+        </div>
+        <div class="file-meta">me</div>
+        <div class="file-meta">—</div>
+      </div>`).join("");
+
+    const fileRows = files.map(item => `
+      <div class="file-row">
+        <div class="file-name">
+          ${itemIcon(item)}
+          <span class="file-name-text">${item.name}</span>
+        </div>
+        <div class="file-meta">me</div>
+        <div class="file-meta">—</div>
+      </div>`).join("");
+
+    const foldersSection = folders.length ? `
+      <div class="section-label">Folders</div>${folderRows}` : "";
+    const filesSection = files.length ? `
+      <div class="section-label" style="margin-top:8px">Files</div>${fileRows}` : "";
+
+    const empty = !children.length ? `
+      <div class="empty">
+        ${folderIcon("#dadce0", 80)}
+        <p>This folder is empty</p>
+      </div>` : "";
+
+    main.innerHTML = `
+      <div class="breadcrumbs">${crumbs}</div>
+      ${toolbar}${header}${foldersSection}${filesSection}${empty}`;
+
+  } else {
+    // Grid
+    const cards = children.map(item => {
+      const onclick = item.type === "folder"
+        ? `onclick="navigate(${JSON.stringify(item).replace(/"/g, '&quot;')})"` : "";
+      return `
+        <div class="grid-card" ${onclick}>
+          <div class="grid-card-preview">${folderColorIcon(item, 48)}</div>
+          <div class="grid-card-info">
+            ${itemIcon(item, 18)}
+            <span class="grid-card-name">${item.name}</span>
+          </div>
+        </div>`;
+    }).join("");
+
+    const empty = !children.length ? `
+      <div class="empty">
+        ${folderIcon("#dadce0", 80)}
+        <p>This folder is empty</p>
+      </div>` : "";
+
+    main.innerHTML = `
+      <div class="breadcrumbs">${crumbs}</div>
+      ${toolbar}
+      <div class="grid-view">${cards}</div>
+      ${empty}`;
+  }
+
+  // Re-attach navigate for list view (can't use inline JSON with nested quotes cleanly)
+  // Use data attributes instead for folder rows
+  document.querySelectorAll(".file-row[onclick]").forEach(row => {
+    const raw = row.getAttribute("onclick");
+    row.removeAttribute("onclick");
+    row.addEventListener("click", () => {
+      // find matching child by name
+      const nameEl = row.querySelector(".file-name-text");
+      if (!nameEl) return;
+      const name = nameEl.textContent;
+      const item = children.find(c => c.name === name);
+      if (item && item.type === "folder") navigate(item);
+    });
+  });
+
+  document.querySelectorAll(".grid-card[onclick]").forEach(card => {
+    card.removeAttribute("onclick");
+    card.addEventListener("click", () => {
+      const nameEl = card.querySelector(".grid-card-name");
+      if (!nameEl) return;
+      const name = nameEl.textContent;
+      const item = children.find(c => c.name === name);
+      if (item && item.type === "folder") navigate(item);
+    });
+  });
+}
+
+function setView(mode) {
+  viewMode = mode;
+  render();
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>
