@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEP Drive</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Google Sans", Roboto, Arial, sans-serif; background: #f8f9fa; display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #202124; }
+  .card { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.08); padding: 48px 40px 40px; width: 100%; max-width: 400px; text-align: center; }
+  .logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 28px; }
+  .logo svg { width: 40px; height: 40px; }
+  .logo-text { font-size: 22px; font-weight: 400; color: #202124; letter-spacing: -0.2px; }
+  .logo-text span { color: #1a73e8; }
+  h2 { font-size: 24px; font-weight: 400; margin-bottom: 8px; color: #202124; }
+  .subtitle { font-size: 14px; color: #5f6368; margin-bottom: 32px; line-height: 1.5; }
+  .input-wrap { position: relative; margin-bottom: 24px; text-align: left; }
+  input[type="password"] { width: 100%; padding: 13px 16px; font-size: 16px; border: 1px solid #dadce0; border-radius: 4px; outline: none; color: #202124; font-family: inherit; transition: border-color 0.15s; }
+  input[type="password"]:focus { border-color: #1a73e8; box-shadow: 0 0 0 2px rgba(26,115,232,.15); }
+  input[type="password"].error { border-color: #d93025; }
+  .error-msg { font-size: 12px; color: #d93025; margin-top: 6px; display: none; text-align: left; }
+  .error-msg.visible { display: block; }
+  button { width: 100%; padding: 13px; background: #1a73e8; color: #fff; border: none; border-radius: 4px; font-size: 15px; font-family: "Google Sans", Roboto, Arial, sans-serif; font-weight: 500; cursor: pointer; transition: background 0.15s, box-shadow 0.15s; letter-spacing: 0.2px; }
+  button:hover { background: #1765cc; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  button:active { background: #1558b0; }
+  button:disabled { background: #94b8f5; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <svg viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+      <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+      <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
+      <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+      <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+      <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+      <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+    </svg>
+    <span class="logo-text">Post Everything <span>Drive</span></span>
+  </div>
+  <h2>Sign in to view</h2>
+  <p class="subtitle">Enter the access password to preview the new folder structure.</p>
+  <div class="input-wrap">
+    <input type="password" id="pw" placeholder="Password" autocomplete="off">
+    <div class="error-msg" id="err">Incorrect password. Please try again.</div>
+  </div>
+  <button id="btn" onclick="check()">Continue</button>
+</div>
+<script>
+async function sha256(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+async function check() {
+  const pw = document.getElementById("pw").value.trim();
+  const btn = document.getElementById("btn");
+  const err = document.getElementById("err");
+  const inp = document.getElementById("pw");
+  if (!pw) return;
+  btn.disabled = true;
+  btn.textContent = "Checking…";
+  const hash = await sha256(pw);
+  const target = window.location.pathname.replace(/\/?$/, "/") + hash + "/";
+  const res = await fetch(target, { method: "HEAD" }).catch(() => null);
+  if (res && res.ok) {
+    window.location.href = target;
+  } else {
+    inp.classList.add("error");
+    err.classList.add("visible");
+    btn.disabled = false;
+    btn.textContent = "Continue";
+    inp.focus();
+  }
+}
+document.getElementById("pw").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") check();
+  this.classList.remove("error");
+  document.getElementById("err").classList.remove("visible");
+});
+</script>
+</body>
+</html>
